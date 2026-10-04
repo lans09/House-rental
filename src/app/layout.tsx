@@ -8,16 +8,13 @@ const sans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
-  weight: ['400', '500', '600', '700', '800'],
 });
 
 // Warm, characterful display serif for headings
 const serif = Fraunces({
   subsets: ['latin'],
-  style: ['normal', 'italic'],
   variable: '--font-serif',
   display: 'swap',
-  axes: ['opsz', 'SOFT'],
 });
 
 // Kept for inner pages that still use font-mono
