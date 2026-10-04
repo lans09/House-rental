@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #FBFAF7; /* Paper */
+  --foreground: #16140F; /* Ink */
+}
+
+html,
+body {
+  color: var(--foreground);
+  background-color: var(--background);
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: clip;
+}
+
+@layer components {
+  /* Shared page container with responsive mobile gutters */
+  .container-x {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* Architectural Hairline Dividers */
+.hairline-b {
+  border-bottom: 1px solid #E7E5E4;
+}
+
+.hairline-t {
+  border-top: 1px solid #E7E5E4;
+}
+
+.hairline-r {
+  border-right: 1px solid #E7E5E4;
+}
+
+.hairline-l {
+  border-left: 1px solid #E7E5E4;
+}
+
+/* Gallery Paper Card */
+.paper-card {
+  background: #FFFFFF;
+  border: 1px solid #E7E5E4;
+  box-shadow: 0 1px 3px 0 rgba(15, 17, 21, 0.02);
+}
+
+.paper-card:hover {
+  border-color: #C5A880;
+  box-shadow: 0 8px 30px -4px rgba(15, 17, 21, 0.06);
+}
+
+/* Custom styling for range input slider */
+input[type="range"] {
+  accent-color: #0F1115;
+}
