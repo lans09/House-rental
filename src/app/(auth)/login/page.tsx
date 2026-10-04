@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { Logo } from '@/components/Logo';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -18,31 +19,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 bg-stone-50">
-      <div className="max-w-md w-full bg-white rounded-3xl border border-stone-200 p-8 sm:p-10 shadow-xl space-y-6">
-        {/* Brand Header with Restored Architectural House Emblem */}
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 sm:py-16 bg-paper">
+      <div className="max-w-md w-full bg-white rounded-3xl border border-ink/10 p-8 sm:p-10 shadow-[0_18px_50px_-24px_rgba(22,20,15,0.18)] space-y-6">
+        {/* Brand Header with standard Logo */}
         <div className="text-center space-y-3">
-          <Link href="/" className="inline-flex items-center gap-2.5 justify-center mb-1">
-            <div className="h-10 w-10 rounded-xl bg-amber-500 flex items-center justify-center text-stone-950 shadow-md">
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 10.5L12 3l9 7.5" />
-                <path d="M5 9v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9" />
-                <path d="M9 21V12h6v9" />
-              </svg>
-            </div>
-            <div className="flex flex-col text-left">
-              <span className="text-xl font-black tracking-tight text-stone-950 font-serif">
-                Rent<span className="text-amber-500">Ora</span>
-              </span>
-              <span className="text-[9px] font-mono tracking-widest text-stone-500 uppercase -mt-1 font-bold">
-                Eastern Nigeria
-              </span>
-            </div>
-          </Link>
-          <h2 className="text-2xl font-black text-stone-950 font-serif tracking-tight">
-            Welcome Back
-          </h2>
-          <p className="text-xs text-stone-600">
+          <div className="flex justify-center mb-2">
+            <Logo />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-serif text-ink tracking-tight">
+            Welcome back
+          </h1>
+          <p className="text-[14px] text-ink-600 leading-relaxed">
             Sign in to manage your verified listings, view requests, or schedule inspections.
           </p>
         </div>
@@ -50,7 +37,7 @@ export default function LoginPage() {
         {/* Email Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-mono font-bold text-stone-700 uppercase mb-1">
+            <label className="block text-[13px] font-semibold text-ink mb-1.5">
               Email Address or Phone
             </label>
             <input
@@ -59,16 +46,16 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com or +234..."
-              className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-[16px] sm:text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full px-4 py-2.5 bg-paper-100 border border-ink/10 rounded-xl text-[15px] text-ink focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-ink-400"
             />
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-mono font-bold text-stone-700 uppercase">
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-[13px] font-semibold text-ink">
                 Password
               </label>
-              <Link href="/forgot-password" className="text-xs text-amber-700 hover:underline font-mono">
+              <Link href="/forgot-password" className="text-[13px] text-amber-700 hover:text-amber-800 font-medium">
                 Forgot?
               </Link>
             </div>
@@ -78,23 +65,23 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-[16px] sm:text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full px-4 py-2.5 bg-paper-100 border border-ink/10 rounded-xl text-[15px] text-ink focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-ink-400"
             />
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-mono font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all disabled:opacity-50"
+            className="w-full py-3 bg-ink hover:bg-ink-800 text-white font-semibold text-[15px] rounded-xl shadow-sm transition-all disabled:opacity-50 mt-2"
           >
-            {isLoading ? 'Authenticating...' : 'Sign In to Dashboard →'}
+            {isLoading ? 'Authenticating...' : 'Sign in to dashboard →'}
           </button>
         </form>
 
-        <div className="pt-4 border-t border-stone-100 text-center text-xs text-stone-600">
+        <div className="pt-4 border-t border-ink/10 text-center text-[13px] text-ink-600">
           Don't have an account yet?{' '}
-          <Link href="/register" className="font-bold text-amber-700 hover:underline">
-            Register for Free
+          <Link href="/register" className="font-semibold text-amber-700 hover:text-amber-800">
+            Register for free
           </Link>
         </div>
       </div>

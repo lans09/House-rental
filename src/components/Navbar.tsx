@@ -8,7 +8,7 @@ const LINKS = [
   { href: '/properties?purpose=rent', label: 'Rent' },
   { href: '/properties?purpose=sale', label: 'Buy' },
   { href: '/#how-it-works', label: 'How it works' },
-  { href: '/pricing', label: 'For owners & agents' },
+  { href: '/register?role=landlord', label: 'For owners & agents' },
 ];
 
 export function Navbar() {

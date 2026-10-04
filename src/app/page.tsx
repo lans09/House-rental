@@ -347,8 +347,8 @@ export default function HomePage() {
                 >
                   List your property, free
                 </Link>
-                <Link href="/pricing" className="w-full sm:w-auto text-center py-2 text-[15px] font-semibold text-white underline decoration-white/40 underline-offset-[6px] hover:decoration-white">
-                  Plans for agents
+                <Link href="/register?role=agent" className="w-full sm:w-auto text-center py-2 text-[15px] font-semibold text-white underline decoration-white/40 underline-offset-[6px] hover:decoration-white">
+                  Join as registered agent
                 </Link>
               </div>
             </div>

@@ -18,7 +18,7 @@ const COLUMNS = [
     title: 'Owners & agents',
     links: [
       { href: '/register?role=landlord', label: 'List your property' },
-      { href: '/pricing', label: 'Plans for agents' },
+      { href: '/register?role=agent', label: 'Register as agent' },
       { href: '/verification-guide', label: 'How we verify' },
     ],
   },

@@ -8,7 +8,7 @@ interface FeeBreakdownCardProps {
   cautionFee?: number;
   legalFeePct?: number;
   agencyFeePct?: number;
-  isShortLet?: boolean;
+  isSale?: boolean;
 }
 
 export function FeeBreakdownCard({
@@ -17,11 +17,13 @@ export function FeeBreakdownCard({
   cautionFee = 0,
   legalFeePct = 10,
   agencyFeePct = 10,
-  isShortLet = false,
+  isSale = false,
 }: FeeBreakdownCardProps) {
-  const legalFee = (rentPrice * legalFeePct) / 100;
-  const agencyFee = (rentPrice * agencyFeePct) / 100;
-  const totalUpfront = rentPrice + serviceCharge + cautionFee + legalFee + agencyFee;
+  const legalFee = isSale ? (rentPrice * 5) / 100 : (rentPrice * legalFeePct) / 100;
+  const agencyFee = isSale ? (rentPrice * 5) / 100 : (rentPrice * agencyFeePct) / 100;
+  const totalUpfront = isSale
+    ? rentPrice + legalFee + agencyFee
+    : rentPrice + serviceCharge + cautionFee + legalFee + agencyFee;
 
   const formatNaira = (amount: number) => {
     return new Intl.NumberFormat('en-NG', {
@@ -32,73 +34,68 @@ export function FeeBreakdownCard({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200 p-6 shadow-sm space-y-4">
-      <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-        <div>
-          <span className="text-[10px] font-mono uppercase tracking-wider text-amber-600 font-bold block">
-            Locked Mandate Pricing
+    <div className="rounded-3xl bg-ink p-6 sm:p-7 text-white shadow-lg space-y-5">
+      <div>
+        <div className="flex items-center justify-between">
+          <p className="text-[13px] font-semibold text-amber-300">Locked Landlord Agreement</p>
+          <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-medium text-white/80">
+            {isSale ? 'Outright purchase' : '1-year lease'}
           </span>
-          <h3 className="font-bold text-stone-950 text-sm font-serif">
-            Itemised Cost Breakdown
-          </h3>
         </div>
-        <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-stone-100 text-stone-700 rounded-md">
-          {isShortLet ? 'Daily Rate' : '1-Year Upfront'}
-        </span>
+        <h3 className="mt-1 font-serif text-xl sm:text-2xl text-white font-normal">
+          Transparent Cost Breakdown
+        </h3>
+        <p className="mt-1 text-[13px] text-white/65">
+          Every naira signed by the landlord. No surprise viewing fees or gate passes.
+        </p>
       </div>
 
-      <div className="space-y-2.5 text-xs text-stone-700 font-mono">
-        <div className="flex justify-between items-center py-1 border-b border-stone-100">
-          <span className="text-stone-600">Base Annual Rent</span>
-          <span className="font-bold text-stone-950">{formatNaira(rentPrice)}</span>
+      <dl className="divide-y divide-white/10 text-[14px]">
+        <div className="flex items-baseline justify-between py-2.5">
+          <dt className="text-white/70">{isSale ? 'Outright Purchase Price' : 'Annual Base Rent'}</dt>
+          <dd className="font-medium tabular-nums text-white shrink-0">{formatNaira(rentPrice)}</dd>
         </div>
 
-        {serviceCharge > 0 && (
-          <div className="flex justify-between items-center py-1 border-b border-stone-100">
-            <span className="text-stone-600">Estate Service Charge</span>
-            <span className="font-medium text-stone-800">{formatNaira(serviceCharge)}</span>
+        {!isSale && serviceCharge > 0 && (
+          <div className="flex items-baseline justify-between py-2.5">
+            <dt className="text-white/70">Estate Service Charge</dt>
+            <dd className="font-medium tabular-nums text-white shrink-0">{formatNaira(serviceCharge)}</dd>
           </div>
         )}
 
-        {cautionFee > 0 && (
-          <div className="flex justify-between items-center py-1 border-b border-stone-100">
-            <span className="text-stone-600">Refundable Caution Deposit</span>
-            <span className="font-medium text-emerald-700">{formatNaira(cautionFee)} (Refundable)</span>
+        {!isSale && cautionFee > 0 && (
+          <div className="flex items-baseline justify-between py-2.5">
+            <dt className="text-white/70">Refundable Caution Deposit</dt>
+            <dd className="font-medium tabular-nums text-amber-300 shrink-0">
+              {formatNaira(cautionFee)}
+            </dd>
           </div>
         )}
 
-        {!isShortLet && (
-          <>
-            <div className="flex justify-between items-center py-1 border-b border-stone-100">
-              <span className="text-stone-600">Legal Agreement ({legalFeePct}%)</span>
-              <span className="font-medium text-stone-800">{formatNaira(legalFee)}</span>
-            </div>
-
-            <div className="flex justify-between items-center py-1 border-b border-stone-100">
-              <span className="text-stone-600">Agency & Facilitation ({agencyFeePct}%)</span>
-              <span className="font-medium text-stone-800">{formatNaira(agencyFee)}</span>
-            </div>
-          </>
-        )}
-
-        <div className="pt-2">
-          <div className="flex justify-between items-baseline">
-            <div>
-              <span className="text-[10px] uppercase tracking-wider font-bold text-stone-500 block">
-                Total Move-In Settlement
-              </span>
-              <p className="text-2xl font-black text-stone-950 mt-0.5">
-                {formatNaira(totalUpfront)}
-              </p>
-            </div>
-          </div>
+        <div className="flex items-baseline justify-between py-2.5">
+          <dt className="text-white/70">Legal Documentation ({isSale ? '5%' : `${legalFeePct}%`})</dt>
+          <dd className="font-medium tabular-nums text-white shrink-0">{formatNaira(legalFee)}</dd>
         </div>
-      </div>
 
-      <div className="p-3 bg-amber-50 rounded-xl border border-amber-200/80 flex items-start gap-2 text-xs text-amber-950 leading-relaxed">
-        <span className="font-bold text-amber-700 shrink-0">●</span>
+        <div className="flex items-baseline justify-between py-2.5">
+          <dt className="text-white/70">Agency Facilitation ({isSale ? '5%' : `${agencyFeePct}%`})</dt>
+          <dd className="font-medium tabular-nums text-white shrink-0">{formatNaira(agencyFee)}</dd>
+        </div>
+
+        <div className="flex items-baseline justify-between pt-4">
+          <dt className="text-[14px] sm:text-[15px] font-semibold text-white">
+            {isSale ? 'Total Closing Settlement' : 'Total Move-In Settlement'}
+          </dt>
+          <dd className="font-serif text-2xl sm:text-3xl tabular-nums text-amber-300 shrink-0">
+            {formatNaira(totalUpfront)}
+          </dd>
+        </div>
+      </dl>
+
+      <div className="rounded-2xl bg-white/[0.07] p-3.5 border border-white/10 text-[12px] sm:text-[13px] text-white/80 leading-relaxed flex items-start gap-2">
+        <span className="text-emerald-400 font-bold shrink-0">✓</span>
         <p>
-          <strong>RentOra Anti-Extortion Rule:</strong> This fee schedule is legally locked with the landlord. Never pay unofficial gate fees, registration fees, or offline surcharges.
+          <strong className="text-white font-semibold">₦0 Inspection Fee Guarantee:</strong> Inspection is 100% free. Never pay agent gate fees or mobilization fees.
         </p>
       </div>
     </div>
