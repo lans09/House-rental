@@ -20,7 +20,7 @@ export function VerificationBadge({
   return (
     <span
       className={`inline-flex items-center rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 shadow-sm ${sizeClasses[size]} ${className}`}
-      title="Verified by HouseOne: Title documents and direct landlord mandate confirmed"
+      title="Verified by RentOra: Title documents and direct landlord mandate confirmed"
     >
       <span className="h-2 w-2 rounded-full bg-emerald-600 shrink-0"></span>
       {showText && <span>Document Verified</span>}

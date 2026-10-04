@@ -23,7 +23,7 @@ const COLUMNS = [
     ],
   },
   {
-    title: 'HouseOne',
+    title: 'RentOra',
     links: [
       { href: '/report-fraud', label: 'Report a fake listing' },
       { href: '/terms', label: 'Terms' },
@@ -52,8 +52,8 @@ export function Footer() {
             </p>
             <p>
               <span className="text-ink-600">Email </span>
-              <a href="mailto:hello@houseone.ng" className="font-semibold hover:underline">
-                hello@houseone.ng
+              <a href="mailto:hello@rentora.ng" className="font-semibold hover:underline">
+                hello@rentora.ng
               </a>
             </p>
           </div>
@@ -77,7 +77,7 @@ export function Footer() {
 
       <div className="border-t border-ink/10">
         <div className="container-x flex flex-col gap-2 py-6 text-[13px] text-ink-600 sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2026 HouseOne Technologies Nigeria Ltd.</p>
+          <p>© 2026 RentOra Technologies Nigeria Ltd.</p>
           <p>Enugu · Onitsha · Awka · Owerri · Aba · Asaba</p>
         </div>
       </div>

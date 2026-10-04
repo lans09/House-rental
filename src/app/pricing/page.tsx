@@ -76,7 +76,7 @@ export default function PricingPage() {
           Simple, Fair Pricing for Property Owners in the East
         </h1>
         <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
-          Whether you are an individual landlord in Enugu with one vacant duplex, or a licensed brokerage in Onitsha managing multiple estates, HouseOne delivers verified seekers at locked rates once your documents are vetted.
+          Whether you are an individual landlord in Enugu with one vacant duplex, or a licensed brokerage in Onitsha managing multiple estates, RentOra delivers verified seekers at locked rates once your documents are vetted.
         </p>
       </div>
 

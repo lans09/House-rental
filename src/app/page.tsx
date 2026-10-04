@@ -160,7 +160,7 @@ export default function HomePage() {
               You’ve heard this one before.
             </h2>
             <p className="mt-3 sm:mt-4 text-[15px] sm:text-[17px] leading-relaxed text-ink-600">
-              The price on the phone is never the price at the gate. On HouseOne, it is.
+              The price on the phone is never the price at the gate. On RentOra, it is.
             </p>
           </div>
 
@@ -186,9 +186,9 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* The HouseOne way: one honest receipt */}
+            {/* The RentOra way: one honest receipt */}
             <div className="rounded-3xl bg-ink p-5 text-white sm:p-8 shadow-md">
-              <p className="text-[13px] sm:text-[14px] font-semibold text-amber-300">On HouseOne</p>
+              <p className="text-[13px] sm:text-[14px] font-semibold text-amber-300">On RentOra</p>
 
               <dl className="mt-5 sm:mt-6 divide-y divide-white/10">
                 {RECEIPT.map((r) => (

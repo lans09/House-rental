@@ -1,8 +1,8 @@
-# HouseOne 🏠
+# RentOra 🏠
 
 > **Digital Rental Property Marketplace for Nigeria**
 
-HouseOne is a modern PropTech platform connecting property seekers with verified landlords, property managers, and licensed estate agents across Nigeria. Designed to solve rental fraud, pricing opacity, and informal agency chaos through mandatory verification, transparent cost breakdowns, and in-platform communication.
+RentOra is a modern PropTech platform connecting property seekers with verified landlords, property managers, and licensed estate agents across Nigeria. Designed to solve rental fraud, pricing opacity, and informal agency chaos through mandatory verification, transparent cost breakdowns, and in-platform communication.
 
 ---
 

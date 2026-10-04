@@ -32,7 +32,7 @@ export default function LoginPage() {
             </div>
             <div className="flex flex-col text-left">
               <span className="text-xl font-black tracking-tight text-stone-950 font-serif">
-                House<span className="text-amber-500">One</span>
+                Rent<span className="text-amber-500">Ora</span>
               </span>
               <span className="text-[9px] font-mono tracking-widest text-stone-500 uppercase -mt-1 font-bold">
                 Eastern Nigeria

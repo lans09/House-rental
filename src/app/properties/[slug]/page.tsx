@@ -79,7 +79,7 @@ export default function PropertyDetailPage({
   const p = SAMPLE_PROPERTY_DETAIL;
 
   const whatsappUrl = `https://wa.me/${p.owner.whatsapp_phone}?text=${encodeURIComponent(
-    `Hello, I saw your verified listing on HouseOne: "${p.title}" (Ref: ${p.id}) in ${p.area}, ${p.state}. I would like to schedule a viewing.`
+    `Hello, I saw your verified listing on RentOra: "${p.title}" (Ref: ${p.id}) in ${p.area}, ${p.state}. I would like to schedule a viewing.`
   )}`;
 
   return (
@@ -211,17 +211,17 @@ export default function PropertyDetailPage({
             </div>
           </div>
 
-          {/* HouseOne Verification Certificate Box */}
+          {/* RentOra Verification Certificate Box */}
           <div className="p-6 sm:p-8 bg-stone-950 text-white rounded-2xl shadow-xl space-y-3 border border-white/10">
             <div className="flex items-center gap-2 text-amber-400 font-bold text-xs font-mono uppercase tracking-wider">
               <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
-              HouseOne Document Verification & Direct Mandate Guarantee
+              RentOra Document Verification & Direct Mandate Guarantee
             </div>
             <h4 className="text-xl font-bold font-serif text-white">
               Why this property has zero agent markups:
             </h4>
             <p className="text-xs sm:text-sm text-stone-300 leading-relaxed font-light">
-              This property’s listing agent submitted direct ownership papers, landlord authorization, and a binding locked price agreement before being approved on HouseOne. The rental rate of ₦8.5M is locked directly with the mandate holder. No street agent can quote an inflated rate or charge you inspection gate fees.
+              This property’s listing agent submitted direct ownership papers, landlord authorization, and a binding locked price agreement before being approved on RentOra. The rental rate of ₦8.5M is locked directly with the mandate holder. No street agent can quote an inflated rate or charge you inspection gate fees.
             </p>
           </div>
         </div>
@@ -307,7 +307,7 @@ export default function PropertyDetailPage({
                 </div>
                 <h4 className="font-bold text-stone-950 text-base font-serif">Inspection Request Sent!</h4>
                 <p className="text-xs text-stone-600 max-w-xs mx-auto leading-relaxed">
-                  The listing mandate holder has received your request and will confirm your slot within 24 hours under the HouseOne SLA.
+                  The listing mandate holder has received your request and will confirm your slot within 24 hours under the RentOra SLA.
                 </p>
                 <button
                   onClick={() => {
@@ -328,7 +328,7 @@ export default function PropertyDetailPage({
                 className="space-y-4"
               >
                 <p className="text-xs text-stone-600 leading-relaxed">
-                  Select your preferred date and time. Remember: On HouseOne, you never pay an inspection fee to view a verified property.
+                  Select your preferred date and time. Remember: On RentOra, you never pay an inspection fee to view a verified property.
                 </p>
 
                 <div>

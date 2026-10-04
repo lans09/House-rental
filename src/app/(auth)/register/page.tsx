@@ -40,7 +40,7 @@ export default function RegisterPage() {
             </div>
             <div className="flex flex-col text-left">
               <span className="text-xl font-black tracking-tight text-stone-950 font-serif">
-                House<span className="text-amber-500">One</span>
+                Rent<span className="text-amber-500">Ora</span>
               </span>
               <span className="text-[9px] font-mono tracking-widest text-stone-500 uppercase -mt-1 font-bold">
                 Eastern Nigeria
@@ -217,7 +217,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="text-[11px] text-stone-500 leading-relaxed font-mono">
-            By creating an account, you agree to HouseOne's verified pricing SLA and ₦0 inspection fee guarantee.
+            By creating an account, you agree to RentOra's verified pricing SLA and ₦0 inspection fee guarantee.
           </div>
 
           <button
@@ -230,7 +230,7 @@ export default function RegisterPage() {
         </form>
 
         <div className="pt-3 border-t border-stone-100 text-center text-xs text-stone-600">
-          Already registered on HouseOne?{' '}
+          Already registered on RentOra?{' '}
           <Link href="/login" className="font-bold text-amber-700 hover:underline">
             Sign In Here
           </Link>

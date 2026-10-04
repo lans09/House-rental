@@ -14,7 +14,7 @@ export function VerificationDossier() {
           </h2>
           <p className="text-xs sm:text-sm text-stone-600 max-w-2xl leading-relaxed">
             In Nigeria, multiple freelance touts quote conflicting prices for the same vacant house and demand ₦10,000 just to view it. 
-            On HouseOne, agents and landlords must submit ownership papers and direct mandates before their listing is approved.
+            On RentOra, agents and landlords must submit ownership papers and direct mandates before their listing is approved.
           </p>
         </div>
 
@@ -31,7 +31,7 @@ export function VerificationDossier() {
           <div className="space-y-4">
             {/* Top Docket Bar */}
             <div className="flex items-center justify-between border-b border-stone-200/60 pb-3 text-[10px] font-mono tracking-wider text-stone-500 uppercase">
-              <span>COMPLIANCE DOCKET #HO-2026-ENU-014</span>
+              <span>COMPLIANCE DOCKET #RO-2026-ENU-014</span>
               <span className="text-emerald-700 font-bold">STATUS: CONFIRMED</span>
             </div>
 
@@ -69,7 +69,7 @@ export function VerificationDossier() {
           {/* Stamped Seal */}
           <div className="p-3 bg-white rounded-xl border border-stone-200 flex items-center justify-between shadow-sm">
             <div className="text-[11px]">
-              <span className="font-semibold text-obsidian-900 block">HouseOne Compliance Desk</span>
+              <span className="font-semibold text-obsidian-900 block">RentOra Compliance Desk</span>
               <span className="text-stone-500 font-mono text-[10px]">Direct Mandate Confirmed • Zero Middlemen</span>
             </div>
             <div className="h-8 w-8 rounded-full border border-stone-900 flex items-center justify-center text-obsidian-900 font-mono text-xs font-bold rotate-[-12deg]">

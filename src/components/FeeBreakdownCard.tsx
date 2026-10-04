@@ -98,7 +98,7 @@ export function FeeBreakdownCard({
       <div className="p-3 bg-amber-50 rounded-xl border border-amber-200/80 flex items-start gap-2 text-xs text-amber-950 leading-relaxed">
         <span className="font-bold text-amber-700 shrink-0">●</span>
         <p>
-          <strong>HouseOne Anti-Extortion Rule:</strong> This fee schedule is legally locked with the landlord. Never pay unofficial gate fees, registration fees, or offline surcharges.
+          <strong>RentOra Anti-Extortion Rule:</strong> This fee schedule is legally locked with the landlord. Never pay unofficial gate fees, registration fees, or offline surcharges.
         </p>
       </div>
     </div>

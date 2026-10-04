@@ -95,11 +95,11 @@ export function RentSimulator() {
             </button>
           </div>
 
-          {/* HouseOne Guarantee Callout */}
+          {/* RentOra Guarantee Callout */}
           <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs leading-relaxed space-y-1">
-            <p className="font-bold text-emerald-900 font-mono">The HouseOne Policy:</p>
+            <p className="font-bold text-emerald-900 font-mono">The RentOra Policy:</p>
             <p className="text-emerald-800">
-              Every listing on HouseOne must itemize these numbers upfront. No agent is permitted to inflate rates on inspection day. ₦0 inspection fees guaranteed.
+              Every listing on RentOra must itemize these numbers upfront. No agent is permitted to inflate rates on inspection day. ₦0 inspection fees guaranteed.
             </p>
           </div>
         </div>

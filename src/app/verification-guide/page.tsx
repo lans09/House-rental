@@ -9,7 +9,7 @@ export default function VerificationGuidePage() {
     {
       num: '01',
       title: 'Direct Landlord Mandate Submission',
-      desc: 'Agents must submit written proof of instruction and authorization directly from the genuine property owner. Unaccredited street touts who merely copy phone numbers off perimeter walls cannot list on HouseOne.',
+      desc: 'Agents must submit written proof of instruction and authorization directly from the genuine property owner. Unaccredited street touts who merely copy phone numbers off perimeter walls cannot list on RentOra.',
     },
     {
       num: '02',
@@ -34,13 +34,13 @@ export default function VerificationGuidePage() {
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-800 text-xs font-mono uppercase tracking-wider font-bold">
           <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
-          <span>The HouseOne Document Verification Standard</span>
+          <span>The RentOra Document Verification Standard</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-stone-950 tracking-tight font-serif">
           How Every Property Earns the Verified Seal
         </h1>
         <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
-          HouseOne eliminates fake adverts, ghost listings, and rogue agent markups. Our agents must submit certified ownership documents, direct landlord mandates, and locked price schedules before any listing is confirmed.
+          RentOra eliminates fake adverts, ghost listings, and rogue agent markups. Our agents must submit certified ownership documents, direct landlord mandates, and locked price schedules before any listing is confirmed.
         </p>
       </div>
 
@@ -94,7 +94,7 @@ export default function VerificationGuidePage() {
           </h2>
           <p className="text-xs sm:text-sm text-stone-300 leading-relaxed font-light">
             In Nigeria, property hunters waste tens of thousands of Naira paying informal "inspection fees" or "gate passes" to street touts just to view an apartment.
-            On HouseOne, seekers NEVER pay an inspection fee to view a verified property. If any listing agent attempts to charge you an inspection fee before viewing, tap Report for an immediate license ban.
+            On RentOra, seekers NEVER pay an inspection fee to view a verified property. If any listing agent attempts to charge you an inspection fee before viewing, tap Report for an immediate license ban.
           </p>
           <div className="pt-2 flex flex-wrap gap-4 font-mono text-xs font-bold">
             <Link

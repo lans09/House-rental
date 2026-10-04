@@ -26,7 +26,7 @@ const mono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HouseOne — Rent or buy a home in Eastern Nigeria at the owner's price",
+  title: "RentOra — Rent or buy a home in Eastern Nigeria at the owner's price",
   description:
     'Verified homes to rent and buy across Enugu, Onitsha, Awka, Owerri, Aba and Asaba. Every listing document-verified with landlord mandate and fixed owner pricing. No inspection fees.',
 };

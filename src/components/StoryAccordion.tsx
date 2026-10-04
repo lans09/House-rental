@@ -9,7 +9,7 @@ export function StoryAccordion() {
     {
       title: 'The Problem with the Street Agent System',
       content:
-        'In Eastern Nigeria, finding a house usually means being dragged around by informal agent syndicates. You pay non-refundable ₦5,000–₦10,000 "inspection fees" for houses that are already let, see prices inflated by 30%, and face surprise agency cuts at the gate. HouseOne eliminates the entire racket.',
+        'In Eastern Nigeria, finding a house usually means being dragged around by informal agent syndicates. You pay non-refundable ₦5,000–₦10,000 "inspection fees" for houses that are already let, see prices inflated by 30%, and face surprise agency cuts at the gate. RentOra eliminates the entire racket.',
     },
     {
       title: 'For Landlords: Stop Losing Tenants to Misquoted Prices',
@@ -19,7 +19,7 @@ export function StoryAccordion() {
     {
       title: 'For Licensed Agents & Registered Surveyors',
       content:
-        'Are you a licensed surveyor or registered property manager with direct instructions from the owner? HouseOne rewards genuine mandates with verified badges and pre-vetted, serious seekers—while keeping out unverified middlemen.',
+        'Are you a licensed surveyor or registered property manager with direct instructions from the owner? RentOra rewards genuine mandates with verified badges and pre-vetted, serious seekers—while keeping out unverified middlemen.',
     },
     {
       title: 'Our Mandatory Document Vetting Standard',
@@ -33,7 +33,7 @@ export function StoryAccordion() {
       {/* Title */}
       <div className="text-center space-y-2">
         <span className="text-[11px] font-mono tracking-[0.2em] text-amber-600 uppercase font-semibold">
-          Why HouseOne
+          Why RentOra
         </span>
         <h2 className="text-3xl sm:text-4xl font-serif font-bold text-obsidian-900 tracking-tight">
           Built to Fix Nigerian Real Estate from the Ground Up

@@ -147,7 +147,7 @@ export function LatestListingsGrid() {
               <div>
                 <a
                   href={`https://wa.me/${p.agent.whatsapp}?text=${encodeURIComponent(
-                    `Hello, I would like to inspect "${p.title}" directly via HouseOne.`
+                    `Hello, I would like to inspect "${p.title}" directly via RentOra.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
