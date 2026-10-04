@@ -1,30 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, Suspense } from 'react';
 import Link from 'next/link';
-import { PropertyCard } from '@/components/PropertyCard';
-
-interface CatalogueProperty {
-  id: string;
-  title: string;
-  slug: string;
-  property_type: 'duplex' | 'flat_apartment' | 'detached_mansion' | 'land';
-  listing_type: 'rent' | 'sale';
-  bedrooms: number;
-  bathrooms: number;
-  state: string;
-  lga: string;
-  area: string;
-  rent_price: number; // for rent: annual rent; for sale: outright sale price
-  service_charge?: number;
-  caution_fee?: number;
-  legal_fee_pct?: number;
-  agency_fee_pct?: number;
-  total_upfront_estimate?: number;
-  is_verified: boolean;
-  is_featured: boolean;
-  cover_image_url: string;
-}
+import { useSearchParams } from 'next/navigation';
+import { PropertyCard, CatalogueProperty } from '@/components/PropertyCard';
+import { UliLine } from '@/components/UliLine';
 
 const CATALOGUE_PROPERTIES: CatalogueProperty[] = [
   {
@@ -39,10 +19,6 @@ const CATALOGUE_PROPERTIES: CatalogueProperty[] = [
     lga: 'Enugu North',
     area: 'Independence Layout',
     rent_price: 8500000,
-    service_charge: 1000000,
-    caution_fee: 500000,
-    legal_fee_pct: 10,
-    agency_fee_pct: 10,
     total_upfront_estimate: 11700000,
     is_verified: true,
     is_featured: true,
@@ -76,10 +52,6 @@ const CATALOGUE_PROPERTIES: CatalogueProperty[] = [
     lga: 'Owerri Municipal',
     area: 'New Owerri',
     rent_price: 4500000,
-    service_charge: 600000,
-    caution_fee: 350000,
-    legal_fee_pct: 10,
-    agency_fee_pct: 10,
     total_upfront_estimate: 6350000,
     is_verified: true,
     is_featured: true,
@@ -129,10 +101,6 @@ const CATALOGUE_PROPERTIES: CatalogueProperty[] = [
     lga: 'Owerri Municipal',
     area: 'New Owerri',
     rent_price: 2800000,
-    service_charge: 350000,
-    caution_fee: 200000,
-    legal_fee_pct: 10,
-    agency_fee_pct: 10,
     total_upfront_estimate: 3910000,
     is_verified: true,
     is_featured: false,
@@ -150,10 +118,6 @@ const CATALOGUE_PROPERTIES: CatalogueProperty[] = [
     lga: 'Enugu East',
     area: 'Trans-Ekulu',
     rent_price: 2200000,
-    service_charge: 300000,
-    caution_fee: 150000,
-    legal_fee_pct: 10,
-    agency_fee_pct: 10,
     total_upfront_estimate: 3090000,
     is_verified: true,
     is_featured: false,
@@ -187,10 +151,6 @@ const CATALOGUE_PROPERTIES: CatalogueProperty[] = [
     lga: 'Aba South',
     area: 'Aba GRA',
     rent_price: 3500000,
-    service_charge: 400000,
-    caution_fee: 250000,
-    legal_fee_pct: 10,
-    agency_fee_pct: 10,
     total_upfront_estimate: 4850000,
     is_verified: true,
     is_featured: false,
@@ -198,259 +158,464 @@ const CATALOGUE_PROPERTIES: CatalogueProperty[] = [
   },
 ];
 
-export default function PropertiesCataloguePage() {
-  const [listingTypeFilter, setListingTypeFilter] = useState<'all' | 'rent' | 'sale'>('all');
-  const [selectedState, setSelectedState] = useState('All');
-  const [selectedType, setSelectedType] = useState('All');
-  const [verifiedOnly, setVerifiedOnly] = useState(true);
-  const [sortBy, setSortBy] = useState('verified_first');
-  const [showMobileFilters, setShowMobileFilters] = useState(false);
+const CITIES = [
+  { label: 'All Cities', state: '', area: '' },
+  { label: 'Enugu', state: 'Enugu', area: '' },
+  { label: 'Onitsha', state: 'Anambra', area: 'Onitsha' },
+  { label: 'Awka', state: 'Anambra', area: 'Awka' },
+  { label: 'Owerri', state: 'Imo', area: '' },
+  { label: 'Aba', state: 'Abia', area: '' },
+  { label: 'Asaba', state: 'Delta', area: 'Asaba' },
+];
 
-  const activeFilterCount =
-    (selectedState !== 'All' ? 1 : 0) +
-    (selectedType !== 'All' ? 1 : 0) +
-    (!verifiedOnly ? 1 : 0);
+const PROPERTY_TYPES = [
+  { value: '', label: 'All property types' },
+  { value: 'flat_apartment', label: 'Flat / Apartment' },
+  { value: 'duplex', label: 'Duplex & Terraced' },
+  { value: 'detached_mansion', label: 'Detached Mansion' },
+  { value: 'land', label: 'Land' },
+];
 
-  const filtered = CATALOGUE_PROPERTIES.filter((p) => {
-    if (listingTypeFilter !== 'all' && p.listing_type !== listingTypeFilter) return false;
-    if (selectedState !== 'All' && p.state !== selectedState) return false;
-    if (selectedType !== 'All' && p.property_type !== selectedType) return false;
-    if (verifiedOnly && !p.is_verified) return false;
-    return true;
+const BUDGET_OPTIONS = {
+  all: [
+    { value: '', label: 'Any budget' },
+    { value: '0-3000000', label: 'Under ₦3m' },
+    { value: '3000000-10000000', label: '₦3m – ₦10m' },
+    { value: '10000000-80000000', label: '₦10m – ₦80m' },
+    { value: '80000000-', label: '₦80m+' },
+  ],
+  rent: [
+    { value: '', label: 'Any budget' },
+    { value: '0-1000000', label: 'Under ₦1m a year' },
+    { value: '1000000-3000000', label: '₦1m – ₦3m a year' },
+    { value: '3000000-6000000', label: '₦3m – ₦6m a year' },
+    { value: '6000000-', label: '₦6m+ a year' },
+  ],
+  sale: [
+    { value: '', label: 'Any budget' },
+    { value: '0-40000000', label: 'Under ₦40m' },
+    { value: '40000000-100000000', label: '₦40m – ₦100m' },
+    { value: '100000000-250000000', label: '₦100m – ₦250m' },
+    { value: '250000000-', label: '₦250m+' },
+  ],
+};
+
+function PropertiesCatalogueContent() {
+  const searchParams = useSearchParams();
+
+  // Initialize from searchParams
+  const initialPurpose = (searchParams.get('purpose') as 'rent' | 'sale') || 'all';
+  const initialState = searchParams.get('state') || '';
+  const initialArea = searchParams.get('area') || '';
+  const initialType = searchParams.get('type') || '';
+  const initialBudget = searchParams.get('price_range') || '';
+
+  const [purpose, setPurpose] = useState<'all' | 'rent' | 'sale'>(initialPurpose);
+  const [selectedCityLabel, setSelectedCityLabel] = useState<string>(() => {
+    if (initialArea) {
+      const match = CITIES.find((c) => c.area.toLowerCase() === initialArea.toLowerCase());
+      if (match) return match.label;
+    }
+    if (initialState) {
+      const match = CITIES.find((c) => c.state.toLowerCase() === initialState.toLowerCase() && !c.area);
+      if (match) return match.label;
+      const stateMatch = CITIES.find((c) => c.state.toLowerCase() === initialState.toLowerCase());
+      if (stateMatch) return stateMatch.label;
+    }
+    return 'All Cities';
   });
 
+  const [selectedType, setSelectedType] = useState<string>(initialType);
+  const [selectedBudget, setSelectedBudget] = useState<string>(initialBudget);
+  const [sortBy, setSortBy] = useState<string>('verified_first');
+
+  // Filtered properties
+  const filtered = useMemo(() => {
+    return CATALOGUE_PROPERTIES.filter((p) => {
+      // Listing purpose filter
+      if (purpose !== 'all' && p.listing_type !== purpose) return false;
+
+      // City filter
+      if (selectedCityLabel !== 'All Cities') {
+        const cityConfig = CITIES.find((c) => c.label === selectedCityLabel);
+        if (cityConfig) {
+          if (cityConfig.state && p.state !== cityConfig.state) return false;
+          if (cityConfig.area && !p.area.toLowerCase().includes(cityConfig.area.toLowerCase())) {
+            return false;
+          }
+        }
+      }
+
+      // Property type filter
+      if (selectedType && p.property_type !== selectedType) return false;
+
+      // Budget filter
+      if (selectedBudget) {
+        const [minStr, maxStr] = selectedBudget.split('-');
+        const min = minStr ? parseInt(minStr, 10) : 0;
+        const max = maxStr ? parseInt(maxStr, 10) : Infinity;
+        if (p.rent_price < min || p.rent_price > max) return false;
+      }
+
+      return true;
+    }).sort((a, b) => {
+      if (sortBy === 'price_low') return a.rent_price - b.rent_price;
+      if (sortBy === 'price_high') return b.rent_price - a.rent_price;
+      // Default: featured first then verified
+      if (a.is_featured && !b.is_featured) return -1;
+      if (!a.is_featured && b.is_featured) return 1;
+      return 0;
+    });
+  }, [purpose, selectedCityLabel, selectedType, selectedBudget, sortBy]);
+
+  const hasActiveFilters =
+    purpose !== 'all' ||
+    selectedCityLabel !== 'All Cities' ||
+    selectedType !== '' ||
+    selectedBudget !== '';
+
+  const resetAllFilters = () => {
+    setPurpose('all');
+    setSelectedCityLabel('All Cities');
+    setSelectedType('');
+    setSelectedBudget('');
+    setSortBy('verified_first');
+  };
+
+  const budgets = BUDGET_OPTIONS[purpose];
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 bg-stone-50 min-h-screen">
-      {/* Header & Market Focus */}
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 sm:gap-6 border-b border-stone-200 pb-5 sm:pb-6">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-800 text-[11px] font-mono uppercase tracking-wider font-bold">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-            <span>Direct Mandate Registry • Zero Middlemen Quotes</span>
-          </div>
-          <h1 className="text-2xl sm:text-4xl font-black text-stone-950 tracking-tight font-serif">
-            Verified Houses For Rent & Sale
+    <div className="bg-paper min-h-screen text-ink">
+      <div className="container-x py-8 sm:py-12 lg:py-16">
+        {/* Header matching RentOra homepage */}
+        <div className="max-w-3xl">
+          <p className="text-[13px] sm:text-[14px] font-semibold text-ink-600">
+            Enugu · Onitsha · Awka · Owerri · Aba · Asaba
+          </p>
+
+          <h1 className="mt-2 font-serif text-3xl sm:text-4xl lg:text-5xl tracking-[-0.01em] text-ink">
+            Verified homes in the East, at the{' '}
+            <span className="relative inline-block">
+              <span className="relative z-10">owner’s real price.</span>
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 260 18"
+                className="absolute -bottom-1 left-0 -z-0 h-3 w-full text-amber-300"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M2 13 C 70 3, 190 4, 258 11"
+                  stroke="currentColor"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </svg>
+            </span>
           </h1>
-          <p className="text-xs sm:text-sm text-stone-600 max-w-2xl leading-relaxed">
-            Every listing below is document-verified. Agents and landlords must submit ownership papers and direct mandates before approval, locking in direct rates with ₦0 viewing fees.
+
+          <p className="mt-3 sm:mt-4 text-[15px] sm:text-[17px] text-ink-600 leading-relaxed">
+            Every listing below is document-verified with direct landlord mandates. No touts, zero inspection fees, and every fee disclosed before you step out to view.
           </p>
         </div>
 
-        {/* Listing Type Master Switch: Rent vs Sale */}
-        <div className="grid grid-cols-3 sm:flex items-center p-1 bg-stone-200/80 rounded-xl font-mono text-xs font-bold w-full sm:w-auto shrink-0 shadow-inner">
-          <button
-            type="button"
-            onClick={() => setListingTypeFilter('all')}
-            className={`py-2 px-3 sm:px-4 rounded-lg text-center transition-all ${
-              listingTypeFilter === 'all'
-                ? 'bg-stone-950 text-white shadow-sm'
-                : 'text-stone-700 hover:text-stone-950'
-            }`}
-          >
-            All Units
-          </button>
-          <button
-            type="button"
-            onClick={() => setListingTypeFilter('rent')}
-            className={`py-2 px-3 sm:px-4 rounded-lg text-center transition-all ${
-              listingTypeFilter === 'rent'
-                ? 'bg-stone-950 text-white shadow-sm'
-                : 'text-stone-700 hover:text-stone-950'
-            }`}
-          >
-            For Rent
-          </button>
-          <button
-            type="button"
-            onClick={() => setListingTypeFilter('sale')}
-            className={`py-2 px-3 sm:px-4 rounded-lg text-center transition-all ${
-              listingTypeFilter === 'sale'
-                ? 'bg-amber-500 text-stone-950 shadow-sm'
-                : 'text-stone-700 hover:text-stone-950'
-            }`}
-          >
-            For Sale
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Filter Toggle Button Bar */}
-      <div className="flex items-center justify-between gap-3 lg:hidden bg-white p-3 rounded-2xl border border-stone-200 shadow-sm">
-        <button
-          type="button"
-          onClick={() => setShowMobileFilters((prev) => !prev)}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-900 text-xs font-mono font-bold transition-colors active:scale-95"
-          aria-expanded={showMobileFilters}
-        >
-          <svg className="w-4 h-4 text-stone-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="4" y1="21" x2="4" y2="14" />
-            <line x1="4" y1="10" x2="4" y2="3" />
-            <line x1="12" y1="21" x2="12" y2="12" />
-            <line x1="12" y1="8" x2="12" y2="3" />
-            <line x1="20" y1="21" x2="20" y2="16" />
-            <line x1="20" y1="12" x2="20" y2="3" />
-            <line x1="1" y1="14" x2="7" y2="14" />
-            <line x1="9" y1="8" x2="15" y2="8" />
-            <line x1="17" y1="16" x2="23" y2="16" />
-          </svg>
-          <span>{showMobileFilters ? 'Hide Filters' : 'Filters'}</span>
-          {activeFilterCount > 0 && (
-            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] text-stone-950 font-bold">
-              {activeFilterCount}
-            </span>
-          )}
-        </button>
-
-        <span className="text-[11px] font-mono text-stone-500">
-          <strong className="text-stone-950 font-bold">{filtered.length}</strong> homes found
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-        {/* Filter Sidebar (visible on desktop, toggleable on mobile) */}
-        <aside
-          className={`bg-white rounded-2xl border border-stone-200 p-5 sm:p-6 space-y-5 sm:space-y-6 shadow-sm ${
-            showMobileFilters ? 'block' : 'hidden lg:block'
-          }`}
-        >
-          <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-            <h3 className="font-bold text-sm text-stone-950 font-mono uppercase tracking-wider">
-              Filter Options
-            </h3>
+        {/* Purpose Tabs: All / Rent / Buy */}
+        <div className="mt-8 sm:mt-10 flex items-center gap-6 sm:gap-8 border-b border-ink/10" role="tablist">
+          {[
+            { id: 'all', label: 'All listings' },
+            { id: 'rent', label: 'For rent' },
+            { id: 'sale', label: 'For sale' },
+          ].map((tab) => (
             <button
-              onClick={() => {
-                setListingTypeFilter('all');
-                setSelectedState('All');
-                setSelectedType('All');
-                setVerifiedOnly(true);
-              }}
-              className="text-xs text-amber-700 hover:underline font-mono font-medium"
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={purpose === tab.id}
+              onClick={() => setPurpose(tab.id as any)}
+              className={`relative pb-3 text-[15px] sm:text-[16px] font-semibold transition-colors ${
+                purpose === tab.id ? 'text-ink' : 'text-ink-600 hover:text-ink'
+              }`}
             >
-              Reset All
-            </button>
-          </div>
-
-          {/* Verified Guarantee Toggle */}
-          <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200/80">
-            <label className="flex items-center justify-between cursor-pointer">
-              <div>
-                <span className="block text-xs font-bold text-emerald-950 font-mono">
-                  Verified Mandates Only
-                </span>
-                <span className="text-[11px] text-emerald-800">
-                  Title & papers confirmed
-                </span>
-              </div>
-              <input
-                type="checkbox"
-                checked={verifiedOnly}
-                onChange={(e) => setVerifiedOnly(e.target.checked)}
-                className="h-4 w-4 rounded text-emerald-600 focus:ring-emerald-500 border-emerald-300"
+              {tab.label}
+              <span
+                className={`absolute inset-x-0 -bottom-px h-[3px] rounded-full bg-amber-400 transition-opacity ${
+                  purpose === tab.id ? 'opacity-100' : 'opacity-0'
+                }`}
               />
+            </button>
+          ))}
+        </div>
+
+        {/* Filter Dock (styled like HomeSearch) */}
+        <div className="mt-6 rounded-2xl border border-ink/10 bg-white p-2 sm:p-2.5 shadow-[0_18px_50px_-24px_rgba(22,20,15,0.18)]">
+          <div className="grid grid-cols-1 divide-y divide-ink/10 sm:grid-cols-3 lg:grid-cols-4 sm:divide-x sm:divide-y-0">
+            {/* Where / City */}
+            <label className="relative px-4 py-3 sm:py-2.5 cursor-pointer">
+              <span className="block text-[12px] font-medium text-ink-600">Where</span>
+              <select
+                value={selectedCityLabel}
+                onChange={(e) => setSelectedCityLabel(e.target.value)}
+                className="mt-0.5 w-full appearance-none bg-transparent pr-6 text-[15px] sm:text-[16px] font-semibold text-ink focus:outline-none cursor-pointer"
+              >
+                {CITIES.map((c) => (
+                  <option key={c.label} value={c.label}>
+                    {c.label === 'All Cities' ? 'Anywhere in the East' : c.label}
+                  </option>
+                ))}
+              </select>
+              <svg
+                viewBox="0 0 12 12"
+                className="pointer-events-none absolute right-4 top-1/2 h-3 w-3 -translate-y-1/2 text-ink-600"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                aria-hidden="true"
+              >
+                <path d="M2.5 4.5 6 8l3.5-3.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </label>
-          </div>
 
-          {/* State Selector */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-stone-900 font-mono uppercase tracking-wider">
-              Eastern State
+            {/* Type */}
+            <label className="relative px-4 py-3 sm:py-2.5 cursor-pointer">
+              <span className="block text-[12px] font-medium text-ink-600">Property Type</span>
+              <select
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                className="mt-0.5 w-full appearance-none bg-transparent pr-6 text-[15px] sm:text-[16px] font-semibold text-ink focus:outline-none cursor-pointer"
+              >
+                {PROPERTY_TYPES.map((t) => (
+                  <option key={t.label} value={t.value}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
+              <svg
+                viewBox="0 0 12 12"
+                className="pointer-events-none absolute right-4 top-1/2 h-3 w-3 -translate-y-1/2 text-ink-600"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                aria-hidden="true"
+              >
+                <path d="M2.5 4.5 6 8l3.5-3.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </label>
-            <select
-              value={selectedState}
-              onChange={(e) => setSelectedState(e.target.value)}
-              className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-[16px] sm:text-xs text-stone-900 font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none"
-            >
-              <option value="All">All Eastern States</option>
-              <option value="Enugu">Enugu State (Coal City)</option>
-              <option value="Anambra">Anambra State (Onitsha & Awka)</option>
-              <option value="Imo">Imo State (Owerri)</option>
-              <option value="Abia">Abia State (Aba)</option>
-              <option value="Delta">Delta State (Asaba Gateway)</option>
-            </select>
-          </div>
 
-          {/* Property Category */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-stone-900 font-mono uppercase tracking-wider">
-              Property Category
+            {/* Budget */}
+            <label className="relative px-4 py-3 sm:py-2.5 cursor-pointer">
+              <span className="block text-[12px] font-medium text-ink-600">Budget</span>
+              <select
+                value={selectedBudget}
+                onChange={(e) => setSelectedBudget(e.target.value)}
+                className="mt-0.5 w-full appearance-none bg-transparent pr-6 text-[15px] sm:text-[16px] font-semibold text-ink focus:outline-none cursor-pointer"
+              >
+                {budgets.map((b) => (
+                  <option key={b.label} value={b.value}>
+                    {b.label}
+                  </option>
+                ))}
+              </select>
+              <svg
+                viewBox="0 0 12 12"
+                className="pointer-events-none absolute right-4 top-1/2 h-3 w-3 -translate-y-1/2 text-ink-600"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                aria-hidden="true"
+              >
+                <path d="M2.5 4.5 6 8l3.5-3.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </label>
-            <select
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-[16px] sm:text-xs text-stone-900 font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none"
-            >
-              <option value="All">All Property Types</option>
-              <option value="duplex">Duplex & Terraced</option>
-              <option value="detached_mansion">Detached Mansion</option>
-              <option value="flat_apartment">Serviced Flat / Apartment</option>
-            </select>
-          </div>
 
-          {/* Landlord & Agent Callout Box */}
-          <div className="p-4 bg-stone-950 text-white rounded-xl space-y-2">
-            <span className="text-[10px] font-mono text-amber-400 font-bold uppercase tracking-wider block">
-              Property Owner?
-            </span>
-            <p className="text-xs text-stone-300 leading-snug">
-              List your house for rent or sale without paying touts. Submit your mandate papers for fast 24–48h verification.
-            </p>
-            <Link
-              href="/register?role=landlord"
-              className="inline-block text-xs font-mono font-bold text-amber-400 hover:text-amber-300 uppercase pt-1"
-            >
-              List Free Property →
-            </Link>
-          </div>
-        </aside>
-
-        {/* Results Grid */}
-        <div className="lg:col-span-3 space-y-4">
-          <div className="flex items-center justify-between text-xs text-stone-600 font-mono">
-            <span>Showing <strong className="text-stone-950">{filtered.length}</strong> verified properties</span>
-            <div className="flex items-center gap-2">
-              <span className="text-stone-500">Sort:</span>
+            {/* Sort Dropdown */}
+            <label className="relative px-4 py-3 sm:py-2.5 cursor-pointer">
+              <span className="block text-[12px] font-medium text-ink-600">Sort By</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-2.5 py-1.5 bg-white border border-stone-200 rounded-lg text-[16px] sm:text-xs font-mono text-stone-800 focus:outline-none"
+                className="mt-0.5 w-full appearance-none bg-transparent pr-6 text-[15px] sm:text-[16px] font-semibold text-ink focus:outline-none cursor-pointer"
               >
-                <option value="verified_first">Verified First</option>
+                <option value="verified_first">Verified & Featured First</option>
                 <option value="price_low">Price: Low to High</option>
                 <option value="price_high">Price: High to Low</option>
               </select>
-            </div>
+              <svg
+                viewBox="0 0 12 12"
+                className="pointer-events-none absolute right-4 top-1/2 h-3 w-3 -translate-y-1/2 text-ink-600"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                aria-hidden="true"
+              >
+                <path d="M2.5 4.5 6 8l3.5-3.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </label>
+          </div>
+        </div>
+
+        {/* Quick City Filter Pills (Tap to switch) */}
+        <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <span className="text-[12px] font-medium text-ink-600 shrink-0 pr-1">Popular:</span>
+          {CITIES.map((c) => {
+            const isActive = selectedCityLabel === c.label;
+            return (
+              <button
+                key={c.label}
+                type="button"
+                onClick={() => setSelectedCityLabel(c.label)}
+                className={`rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-all shrink-0 ${
+                  isActive
+                    ? 'bg-ink text-white shadow-sm'
+                    : 'bg-white border border-ink/10 text-ink hover:border-ink/30 hover:bg-paper-100'
+                }`}
+              >
+                {c.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Active Filters Bar & Count */}
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 pb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[14px] sm:text-[15px] font-semibold text-ink">
+              Showing {filtered.length} verified {filtered.length === 1 ? 'property' : 'properties'}
+            </span>
+
+            {hasActiveFilters && (
+              <>
+                <span className="text-ink-600 text-[13px]">·</span>
+                {purpose !== 'all' && (
+                  <button
+                    onClick={() => setPurpose('all')}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-paper-100 border border-ink/10 px-2.5 py-0.5 text-[12px] font-medium text-ink hover:bg-paper-200"
+                  >
+                    <span>{purpose === 'rent' ? 'For Rent' : 'For Sale'}</span>
+                    <span className="text-ink-600">✕</span>
+                  </button>
+                )}
+                {selectedCityLabel !== 'All Cities' && (
+                  <button
+                    onClick={() => setSelectedCityLabel('All Cities')}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-paper-100 border border-ink/10 px-2.5 py-0.5 text-[12px] font-medium text-ink hover:bg-paper-200"
+                  >
+                    <span>{selectedCityLabel}</span>
+                    <span className="text-ink-600">✕</span>
+                  </button>
+                )}
+                {selectedType && (
+                  <button
+                    onClick={() => setSelectedType('')}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-paper-100 border border-ink/10 px-2.5 py-0.5 text-[12px] font-medium text-ink hover:bg-paper-200"
+                  >
+                    <span>{PROPERTY_TYPES.find((t) => t.value === selectedType)?.label}</span>
+                    <span className="text-ink-600">✕</span>
+                  </button>
+                )}
+                {selectedBudget && (
+                  <button
+                    onClick={() => setSelectedBudget('')}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-paper-100 border border-ink/10 px-2.5 py-0.5 text-[12px] font-medium text-ink hover:bg-paper-200"
+                  >
+                    <span>{budgets.find((b) => b.value === selectedBudget)?.label}</span>
+                    <span className="text-ink-600">✕</span>
+                  </button>
+                )}
+                <button
+                  onClick={resetAllFilters}
+                  className="text-[12px] font-semibold text-amber-700 hover:text-amber-800 underline decoration-amber-400 decoration-1 underline-offset-2 ml-1"
+                >
+                  Clear all
+                </button>
+              </>
+            )}
           </div>
 
-          {filtered.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtered.map((property) => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
+          <div className="flex items-center gap-2 text-[12px] font-medium text-forest-700">
+            <span className="inline-block h-2 w-2 rounded-full bg-forest-600"></span>
+            <span>₦0 Viewing Fee Guarantee</span>
+          </div>
+        </div>
+
+        {/* Results Grid matching homepage 'New this week' */}
+        {filtered.length > 0 ? (
+          <div className="mt-8 sm:mt-10 grid gap-y-10 sm:gap-x-6 sm:gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((property) => (
+              <PropertyCard key={property.id} property={property} />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-12 rounded-3xl border border-ink/10 bg-white p-10 text-center shadow-sm max-w-lg mx-auto">
+            <div className="h-12 w-12 rounded-full bg-paper-100 text-ink-600 mx-auto flex items-center justify-center font-serif text-lg">
+              0
             </div>
-          ) : (
-            <div className="text-center py-20 bg-white rounded-2xl border border-stone-200 p-8 space-y-3">
-              <div className="h-12 w-12 rounded-full bg-stone-100 text-stone-400 mx-auto flex items-center justify-center font-mono font-bold text-lg">
-                0
-              </div>
-              <h3 className="font-bold text-stone-950 text-base font-serif">No verified listings match your criteria</h3>
-              <p className="text-xs text-stone-500 max-w-sm mx-auto">
-                Try widening your filters or switching between "For Rent" and "For Sale".
+            <h3 className="mt-4 font-serif text-xl font-bold text-ink">
+              No verified listings match your filters
+            </h3>
+            <p className="mt-2 text-[14px] text-ink-600 leading-relaxed">
+              We couldn’t find any verified homes matching your selected city or budget. Try clearing your filters to explore all available properties.
+            </p>
+            <button
+              type="button"
+              onClick={resetAllFilters}
+              className="mt-5 inline-flex items-center justify-center rounded-xl bg-ink px-6 py-2.5 text-[14px] font-semibold text-white transition-all hover:bg-ink-800"
+            >
+              Reset all filters
+            </button>
+          </div>
+        )}
+
+        {/* Authentic Uli Line Divider */}
+        <UliLine id="uli-catalogue-bottom" className="my-14 sm:my-20 block h-4 w-full text-amber-500/70" />
+
+        {/* Landlord Callout Box matching Homepage styling */}
+        <div className="rounded-3xl bg-ink p-6 sm:p-10 text-white shadow-lg relative overflow-hidden">
+          <div className="relative z-10 grid gap-8 lg:grid-cols-[1.5fr_1fr] items-center">
+            <div>
+              <p className="text-[13px] sm:text-[14px] font-semibold text-amber-300">
+                Are you a landlord or verified property manager?
               </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setListingTypeFilter('all');
-                  setSelectedState('All');
-                  setSelectedType('All');
-                }}
-                className="px-4 py-2 bg-stone-950 text-white rounded-xl text-xs font-mono font-bold"
-              >
-                Reset All Filters
-              </button>
+              <h2 className="mt-2 font-serif text-2xl sm:text-3xl lg:text-4xl">
+                List your property in the East without middleman markups.
+              </h2>
+              <p className="mt-3 text-[14px] sm:text-[15px] text-white/75 max-w-xl leading-relaxed">
+                Submit your direct mandate and ownership papers for review. We approve genuine listings within 24–48 hours and connect you directly to verified tenants and buyers.
+              </p>
             </div>
-          )}
+
+            <div className="flex flex-col sm:flex-row lg:flex-col gap-3 justify-end">
+              <Link
+                href="/register?role=landlord"
+                className="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-3 text-[15px] font-semibold text-ink shadow-sm transition-all hover:bg-amber-300 active:scale-[0.99] text-center"
+              >
+                List your property for free →
+              </Link>
+              <Link
+                href="/register?role=agent"
+                className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-[15px] font-semibold text-white transition-all hover:bg-white/10 text-center"
+              >
+                Join as registered agent
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PropertiesCataloguePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="bg-paper min-h-screen text-ink">
+          <div className="container-x py-16 text-center">
+            <p className="text-ink-600 font-medium">Loading verified properties...</p>
+          </div>
+        </div>
+      }
+    >
+      <PropertiesCatalogueContent />
+    </Suspense>
   );
 }

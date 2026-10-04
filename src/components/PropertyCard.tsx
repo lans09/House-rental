@@ -4,13 +4,31 @@ import React from 'react';
 import Link from 'next/link';
 import { Property } from '@/types/database.types';
 
+export interface CatalogueProperty {
+  id: string;
+  title: string;
+  slug: string;
+  state: string;
+  lga?: string;
+  area: string;
+  bedrooms: number;
+  bathrooms: number;
+  rent_price: number;
+  total_upfront_estimate?: number;
+  property_type: any;
+  listing_type?: 'rent' | 'sale';
+  is_verified?: boolean;
+  is_featured?: boolean;
+  cover_image_url?: string;
+}
+
 interface PropertyCardProps {
-  property: Omit<Partial<Property>, 'property_type'> & {
+  property: CatalogueProperty | (Omit<Partial<Property>, 'property_type'> & {
     id: string;
     title: string;
     slug: string;
     state: string;
-    lga: string;
+    lga?: string;
     area: string;
     bedrooms: number;
     bathrooms: number;
@@ -21,7 +39,7 @@ interface PropertyCardProps {
     is_verified?: boolean;
     is_featured?: boolean;
     cover_image_url?: string;
-  };
+  });
 }
 
 export function PropertyCard({ property }: PropertyCardProps) {
@@ -38,104 +56,93 @@ export function PropertyCard({ property }: PropertyCardProps) {
     '/images/hero-eastern-nigerian-mansion.jpg';
 
   const isSale = property.listing_type === 'sale';
-  const monthlyEquivalent = Math.round(property.rent_price / 12);
-  const upfrontTotal = property.total_upfront_estimate || Math.round(property.rent_price * 1.35);
 
   return (
-    <div className="group bg-white rounded-2xl overflow-hidden border border-stone-200/90 hover:border-amber-400 hover:shadow-xl transition-all duration-300 flex flex-col">
-      {/* Visual Header */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
+    <article className="group flex flex-col">
+      {/* Property Image with refined subtle badges */}
+      <Link
+        href={`/properties/${property.slug}`}
+        className="relative block aspect-[4/3] w-full overflow-hidden rounded-2xl bg-paper-100 shadow-sm"
+      >
         <img
           src={defaultImage}
-          alt={property.title}
-          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+          alt={`${property.title} in ${property.area}`}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         />
 
-        {/* Verification & Listing Type Badges */}
-        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-          {isSale ? (
-            <span className="inline-flex items-center gap-1 text-[10px] font-mono tracking-wider uppercase px-2.5 py-1 rounded-full bg-amber-500 text-stone-950 font-bold backdrop-blur-sm shadow-md">
-              <span className="h-1.5 w-1.5 rounded-full bg-stone-950"></span>
-              FOR SALE • VERIFIED
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-[10px] font-mono tracking-wider uppercase px-2.5 py-1 rounded-full bg-stone-950/90 text-emerald-400 border border-emerald-500/40 font-bold backdrop-blur-sm shadow-md">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-              FOR RENT • VERIFIED
-            </span>
-          )}
+        {/* Clean pill badge for listing purpose (top-left) */}
+        <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[12px] sm:text-[13px] font-semibold text-ink shadow-sm backdrop-blur-sm">
+          {isSale ? 'For sale' : 'For rent'}
+        </span>
 
-          {property.is_featured && (
-            <span className="inline-flex items-center text-[10px] font-mono tracking-wider uppercase px-2.5 py-1 rounded-full bg-stone-950/80 text-amber-300 border border-white/10 font-bold backdrop-blur-sm">
-              DIRECT MANDATE
-            </span>
-          )}
-        </div>
-
-        {/* Property Type Badge */}
-        <div className="absolute bottom-3 left-3">
-          <span className="text-[10px] font-mono tracking-wider uppercase px-2.5 py-1 rounded-md bg-stone-950/90 border border-white/10 text-stone-200 font-medium">
-            {property.property_type?.replace(/_/g, ' ')}
+        {/* Subtle mandate badge (top-right) */}
+        {property.is_featured && (
+          <span className="absolute right-3 top-3 rounded-full bg-ink/85 px-2.5 py-1 text-[11px] font-medium text-amber-300 backdrop-blur-sm shadow-sm">
+            Direct mandate
           </span>
-        </div>
-      </div>
+        )}
+      </Link>
 
-      {/* Card Content */}
-      <div className="p-5 flex flex-col flex-1 justify-between space-y-4">
-        <div className="space-y-2">
-          {/* Price & Upfront Disclosure */}
-          <div className="flex items-baseline justify-between">
-            <div>
-              <div className="flex items-baseline gap-1">
-                <span className="font-mono text-xl font-black text-stone-950">
-                  {formatNaira(property.rent_price)}
+      {/* Property Details */}
+      <div className="mt-3.5 sm:mt-4 flex flex-1 flex-col justify-between">
+        <div>
+          {/* Price line */}
+          <div className="flex items-baseline justify-between gap-2">
+            <p className="font-serif text-xl sm:text-2xl text-ink tracking-tight font-normal">
+              {formatNaira(property.rent_price)}{' '}
+              {!isSale && (
+                <span className="font-sans text-[13px] sm:text-[14px] text-ink-600 font-normal">
+                  / year
                 </span>
-                {!isSale && <span className="text-xs text-stone-500 font-medium">/ yr</span>}
-              </div>
-              <p className="text-[11px] text-stone-500 font-mono mt-0.5">
-                {isSale ? 'Outright Purchase (Verified Deed)' : `~${formatNaira(monthlyEquivalent)}/mo equiv.`}
-              </p>
-            </div>
-            {!isSale && (
-              <div className="text-right">
-                <span className="text-[10px] font-mono uppercase text-stone-500 font-semibold block">Total Move-In</span>
-                <span className="text-xs font-mono font-bold text-amber-700">
-                  {formatNaira(upfrontTotal)}
+              )}
+              {isSale && (
+                <span className="font-sans text-[12px] sm:text-[13px] text-ink-600 font-normal">
+                  outright
                 </span>
-              </div>
+              )}
+            </p>
+            {!isSale && property.total_upfront_estimate && (
+              <span className="text-[12px] font-medium text-ink-600 tabular-nums">
+                Move-in: {formatNaira(property.total_upfront_estimate)}
+              </span>
             )}
           </div>
 
           {/* Title */}
-          <Link href={`/properties/${property.slug}`} className="block group-hover:text-amber-600 transition-colors">
-            <h3 className="font-serif text-base font-bold text-stone-950 leading-snug line-clamp-1">
+          <Link href={`/properties/${property.slug}`} className="block mt-1">
+            <h3 className="text-[15px] sm:text-[16px] font-semibold text-ink group-hover:underline group-hover:decoration-amber-400 group-hover:underline-offset-4 line-clamp-1">
               {property.title}
             </h3>
           </Link>
 
-          {/* Location */}
-          <p className="text-xs text-stone-600 truncate font-normal">
-            {property.area}, {property.lga}, {property.state}
+          {/* Location & Specs */}
+          <p className="mt-0.5 text-[13px] sm:text-[14px] text-ink-600">
+            {property.area}, {property.state} · {property.bedrooms} bed · {property.bathrooms} bath
           </p>
         </div>
 
-        {/* Specs & Link */}
-        <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-600 font-mono">
-          <div className="flex items-center gap-2.5 text-stone-700 font-medium">
-            <span>{property.bedrooms} Beds</span>
-            <span>•</span>
-            <span>{property.bathrooms} Baths</span>
-          </div>
-
+        {/* Verification Guarantee & View Action */}
+        <div className="mt-2.5 pt-2.5 border-t border-ink/10 flex items-center justify-between">
+          <p className="text-[12px] sm:text-[13px] font-medium text-forest-700 flex items-center gap-1.5">
+            <svg
+              className="h-3.5 w-3.5 text-forest-700 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2.5"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span>Mandate & title verified</span>
+          </p>
           <Link
             href={`/properties/${property.slug}`}
-            className="text-stone-950 group-hover:text-amber-600 font-bold text-xs tracking-wider uppercase inline-flex items-center gap-1 transition-colors"
+            className="text-[12px] sm:text-[13px] font-semibold text-ink group-hover:text-amber-600 transition-colors"
           >
-            <span>Inspect</span>
-            <span>→</span>
+            Details →
           </Link>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
