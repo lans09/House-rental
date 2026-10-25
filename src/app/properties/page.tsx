@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useMemo, Suspense } from 'react';
+import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { PropertyCard } from '@/components/PropertyCard';
 import { UliLine } from '@/components/UliLine';
-import { ALL_PROPERTIES } from '@/data/properties';
+import { ALL_PROPERTIES, PropertyDetail } from '@/data/properties';
+import { HouseOneStore } from '@/lib/admin-store';
 
 const CITIES = [
   { label: 'All Cities', state: '', area: '' },
@@ -15,6 +16,10 @@ const CITIES = [
   { label: 'Owerri', state: 'Imo', area: '' },
   { label: 'Aba', state: 'Abia', area: '' },
   { label: 'Asaba', state: 'Delta', area: 'Asaba' },
+  { label: 'Port Harcourt', state: 'Rivers', area: '' },
+  { label: 'Lagos', state: 'Lagos', area: '' },
+  { label: 'Abuja', state: 'Abuja (FCT)', area: '' },
+  { label: 'Uyo', state: 'Akwa Ibom', area: '' },
 ];
 
 const PROPERTY_TYPES = [
@@ -25,32 +30,37 @@ const PROPERTY_TYPES = [
   { value: 'land', label: 'Land' },
 ];
 
-const BUDGET_OPTIONS = {
-  all: [
-    { value: '', label: 'Any budget' },
-    { value: '0-3000000', label: 'Under ₦3m' },
-    { value: '3000000-10000000', label: '₦3m – ₦10m' },
-    { value: '10000000-80000000', label: '₦10m – ₦80m' },
-    { value: '80000000-', label: '₦80m+' },
-  ],
-  rent: [
-    { value: '', label: 'Any budget' },
-    { value: '0-1000000', label: 'Under ₦1m a year' },
-    { value: '1000000-3000000', label: '₦1m – ₦3m a year' },
-    { value: '3000000-6000000', label: '₦3m – ₦6m a year' },
-    { value: '6000000-', label: '₦6m+ a year' },
-  ],
-  sale: [
-    { value: '', label: 'Any budget' },
-    { value: '0-40000000', label: 'Under ₦40m' },
-    { value: '40000000-100000000', label: '₦40m – ₦100m' },
-    { value: '100000000-250000000', label: '₦100m – ₦250m' },
-    { value: '250000000-', label: '₦250m+' },
-  ],
-};
+const BUDGET_OPTIONS = [
+  { value: '', label: 'Any annual rent' },
+  { value: '0-1500000', label: 'Under ₦1.5m / year' },
+  { value: '1500000-3000000', label: '₦1.5m – ₦3m / year' },
+  { value: '3000000-6000000', label: '₦3m – ₦6m / year' },
+  { value: '6000000-12000000', label: '₦6m – ₦12m / year' },
+  { value: '12000000-', label: '₦12m+ / year' },
+];
+
+const INFRASTRUCTURE_FILTERS = [
+  { id: 'prepaid', label: 'Dedicated Prepaid Meter' },
+  { id: 'band_a', label: 'DisCo Band A (20+ hrs)' },
+  { id: 'treated_water', label: 'Treated Borehole Water' },
+  { id: 'flood_free', label: '100% Flood-Free Approach' },
+];
 
 function PropertiesCatalogueContent() {
   const searchParams = useSearchParams();
+  const [liveProperties, setLiveProperties] = useState<PropertyDetail[]>(ALL_PROPERTIES);
+
+  useEffect(() => {
+    const sync = () => {
+      const published = HouseOneStore.getPublishedPropertyDetails();
+      if (published.length > 0) {
+        setLiveProperties(published);
+      }
+    };
+    sync();
+    window.addEventListener('houseone-store-updated', sync);
+    return () => window.removeEventListener('houseone-store-updated', sync);
+  }, []);
 
   // Initialize from searchParams
   const initialPurpose = (searchParams.get('purpose') as 'rent' | 'sale') || 'all';
@@ -58,8 +68,10 @@ function PropertiesCatalogueContent() {
   const initialArea = searchParams.get('area') || '';
   const initialType = searchParams.get('type') || '';
   const initialBudget = searchParams.get('price_range') || '';
+  const initialQuery = searchParams.get('q') || searchParams.get('address') || '';
 
   const [purpose, setPurpose] = useState<'all' | 'rent' | 'sale'>(initialPurpose);
+  const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
   const [selectedCityLabel, setSelectedCityLabel] = useState<string>(() => {
     if (initialArea) {
       const match = CITIES.find((c) => c.area.toLowerCase() === initialArea.toLowerCase());
@@ -76,11 +88,31 @@ function PropertiesCatalogueContent() {
 
   const [selectedType, setSelectedType] = useState<string>(initialType);
   const [selectedBudget, setSelectedBudget] = useState<string>(initialBudget);
+  const [selectedInfra, setSelectedInfra] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<string>('verified_first');
+
+  const toggleInfra = (id: string) => {
+    setSelectedInfra((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
 
   // Filtered properties
   const filtered = useMemo(() => {
-    return ALL_PROPERTIES.filter((p) => {
+    return liveProperties.filter((p) => {
+      // Freeform address / keyword query filter
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        const matchesQuery =
+          p.title.toLowerCase().includes(q) ||
+          p.street_address.toLowerCase().includes(q) ||
+          p.area.toLowerCase().includes(q) ||
+          p.lga.toLowerCase().includes(q) ||
+          p.state.toLowerCase().includes(q) ||
+          p.landmark.toLowerCase().includes(q);
+        if (!matchesQuery) return false;
+      }
+
       // Listing purpose filter
       if (purpose !== 'all' && p.listing_type !== purpose) return false;
 
@@ -106,6 +138,27 @@ function PropertiesCatalogueContent() {
         if (p.rent_price < min || p.rent_price > max) return false;
       }
 
+      // Nigerian Infrastructure filters
+      if (selectedInfra.length > 0) {
+        const allAmenities = (p.amenities || []).map((f: string) => f.toLowerCase());
+        if (selectedInfra.includes('prepaid')) {
+          const hasPrepaid = allAmenities.some((f: string) => f.includes('prepaid') || f.includes('meter') || f.includes('token'));
+          if (!hasPrepaid) return false;
+        }
+        if (selectedInfra.includes('band_a')) {
+          const hasBandA = allAmenities.some((f: string) => f.includes('band a') || f.includes('20+'));
+          if (!hasBandA) return false;
+        }
+        if (selectedInfra.includes('treated_water')) {
+          const hasWater = allAmenities.some((f: string) => f.includes('treated') || f.includes('borehole') || f.includes('filtration'));
+          if (!hasWater) return false;
+        }
+        if (selectedInfra.includes('flood_free')) {
+          const hasFlood = allAmenities.some((f: string) => f.includes('flood') || f.includes('tarred') || f.includes('paved'));
+          if (!hasFlood) return false;
+        }
+      }
+
       return true;
     }).sort((a, b) => {
       if (sortBy === 'price_low') return a.rent_price - b.rent_price;
@@ -115,35 +168,37 @@ function PropertiesCatalogueContent() {
       if (!a.is_featured && b.is_featured) return 1;
       return 0;
     });
-  }, [purpose, selectedCityLabel, selectedType, selectedBudget, sortBy]);
+  }, [liveProperties, searchQuery, purpose, selectedCityLabel, selectedType, selectedBudget, selectedInfra, sortBy]);
 
   const hasActiveFilters =
+    searchQuery.trim() !== '' ||
     purpose !== 'all' ||
     selectedCityLabel !== 'All Cities' ||
     selectedType !== '' ||
-    selectedBudget !== '';
+    selectedBudget !== '' ||
+    selectedInfra.length > 0;
 
   const resetAllFilters = () => {
+    setSearchQuery('');
     setPurpose('all');
     setSelectedCityLabel('All Cities');
     setSelectedType('');
     setSelectedBudget('');
+    setSelectedInfra([]);
     setSortBy('verified_first');
   };
-
-  const budgets = BUDGET_OPTIONS[purpose];
 
   return (
     <div className="bg-paper min-h-screen text-ink">
       <div className="container-x py-8 sm:py-12 lg:py-16">
-        {/* Header matching RentOra homepage */}
+        {/* Editorial Header */}
         <div className="max-w-3xl">
           <p className="text-[13px] sm:text-[14px] font-semibold text-ink-600">
-            Enugu · Onitsha · Awka · Owerri · Aba · Asaba
+            Enugu · Onitsha · Awka · Owerri · Aba · Asaba · Port Harcourt · Lagos · Abuja · Uyo · <span className="text-amber-600 font-bold">...</span>
           </p>
 
           <h1 className="mt-2 font-serif text-3xl sm:text-4xl lg:text-5xl tracking-[-0.01em] text-ink">
-            Verified homes in the East, at the{' '}
+            Verified homes, at the{' '}
             <span className="relative inline-block">
               <span className="relative z-10">owner’s real price.</span>
               <svg
@@ -168,12 +223,11 @@ function PropertiesCatalogueContent() {
           </p>
         </div>
 
-        {/* Purpose Tabs: All / Rent / Buy */}
+        {/* Purpose Tabs: Verified Rentals */}
         <div className="mt-8 sm:mt-10 flex items-center gap-6 sm:gap-8 border-b border-ink/10" role="tablist">
           {[
-            { id: 'all', label: 'All listings' },
-            { id: 'rent', label: 'For rent' },
-            { id: 'sale', label: 'For sale' },
+            { id: 'all', label: 'All verified rentals' },
+            { id: 'rent', label: 'Annual leases' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -208,7 +262,7 @@ function PropertiesCatalogueContent() {
               >
                 {CITIES.map((c) => (
                   <option key={c.label} value={c.label}>
-                    {c.label === 'All Cities' ? 'Anywhere in the East' : c.label}
+                    {c.label}
                   </option>
                 ))}
               </select>
@@ -252,13 +306,13 @@ function PropertiesCatalogueContent() {
 
             {/* Budget */}
             <label className="relative px-4 py-3 sm:py-2.5 cursor-pointer">
-              <span className="block text-[12px] font-medium text-ink-600">Budget</span>
+              <span className="block text-[12px] font-medium text-ink-600">Annual Rent</span>
               <select
                 value={selectedBudget}
                 onChange={(e) => setSelectedBudget(e.target.value)}
                 className="mt-0.5 w-full appearance-none bg-transparent pr-6 text-[15px] sm:text-[16px] font-semibold text-ink focus:outline-none cursor-pointer"
               >
-                {budgets.map((b) => (
+                {BUDGET_OPTIONS.map((b) => (
                   <option key={b.label} value={b.value}>
                     {b.label}
                   </option>
@@ -284,7 +338,7 @@ function PropertiesCatalogueContent() {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="mt-0.5 w-full appearance-none bg-transparent pr-6 text-[15px] sm:text-[16px] font-semibold text-ink focus:outline-none cursor-pointer"
               >
-                <option value="verified_first">Verified & Featured First</option>
+                <option value="verified_first">Verified &amp; Featured First</option>
                 <option value="price_low">Price: Low to High</option>
                 <option value="price_high">Price: High to Low</option>
               </select>
@@ -300,6 +354,29 @@ function PropertiesCatalogueContent() {
               </svg>
             </label>
           </div>
+        </div>
+
+        {/* Infrastructure Filter Chips (Nigerian Reality) */}
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span className="text-[12px] font-semibold text-ink-800 shrink-0 pr-1">Verify:</span>
+          {INFRASTRUCTURE_FILTERS.map((item) => {
+            const isSelected = selectedInfra.includes(item.id);
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => toggleInfra(item.id)}
+                className={`rounded-full px-3 py-1 text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  isSelected
+                    ? 'bg-forest-800 text-white shadow-sm ring-1 ring-forest-900'
+                    : 'bg-white border border-ink/15 text-ink-600 hover:text-ink hover:border-ink/30'
+                }`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-amber-300' : 'bg-ink/30'}`} />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Quick City Filter Pills (Tap to switch) */}
@@ -334,12 +411,21 @@ function PropertiesCatalogueContent() {
             {hasActiveFilters && (
               <>
                 <span className="text-ink-600 text-[13px]">·</span>
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-300 px-2.5 py-0.5 text-[12px] font-medium text-amber-900 hover:bg-amber-100"
+                  >
+                    <span>Address/Keyword: "{searchQuery}"</span>
+                    <span className="text-amber-700">✕</span>
+                  </button>
+                )}
                 {purpose !== 'all' && (
                   <button
                     onClick={() => setPurpose('all')}
                     className="inline-flex items-center gap-1.5 rounded-full bg-paper-100 border border-ink/10 px-2.5 py-0.5 text-[12px] font-medium text-ink hover:bg-paper-200"
                   >
-                    <span>{purpose === 'rent' ? 'For Rent' : 'For Sale'}</span>
+                    <span>Verified Rental</span>
                     <span className="text-ink-600">✕</span>
                   </button>
                 )}
@@ -366,7 +452,7 @@ function PropertiesCatalogueContent() {
                     onClick={() => setSelectedBudget('')}
                     className="inline-flex items-center gap-1.5 rounded-full bg-paper-100 border border-ink/10 px-2.5 py-0.5 text-[12px] font-medium text-ink hover:bg-paper-200"
                   >
-                    <span>{budgets.find((b) => b.value === selectedBudget)?.label}</span>
+                    <span>{BUDGET_OPTIONS.find((b) => b.value === selectedBudget)?.label}</span>
                     <span className="text-ink-600">✕</span>
                   </button>
                 )}
@@ -428,22 +514,22 @@ function PropertiesCatalogueContent() {
                 List your property in the East without middleman markups.
               </h2>
               <p className="mt-3 text-[14px] sm:text-[15px] text-white/75 max-w-xl leading-relaxed">
-                Submit your direct mandate and ownership papers for review. We approve genuine listings within 24–48 hours and connect you directly to verified tenants and buyers.
+                Submit your direct mandate and ownership papers for review. We approve genuine listings within 24–48 hours and connect you directly to verified tenants.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row lg:flex-col gap-3 justify-end">
               <Link
-                href="/register?role=landlord"
+                href="/list-property"
                 className="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-3 text-[15px] font-semibold text-ink shadow-sm transition-all hover:bg-amber-300 active:scale-[0.99] text-center"
               >
-                List your property for free →
+                Submit a property dossier →
               </Link>
               <Link
-                href="/register?role=agent"
+                href="/register?role=landlord&redirect=/list-property"
                 className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-[15px] font-semibold text-white transition-all hover:bg-white/10 text-center"
               >
-                Join as registered agent
+                Create Landlord / Agent Account
               </Link>
             </div>
           </div>

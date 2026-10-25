@@ -56,8 +56,8 @@ export function VerificationDossier() {
                 <span className="text-ink font-semibold">✓ Signed & Confirmed</span>
               </div>
               <div className="flex items-center justify-between py-1 border-b border-ink/5">
-                <span className="text-ink-600">Agent Identity & CAC Status</span>
-                <span className="text-ink font-semibold">✓ NIN / CAC Accredited</span>
+                <span className="text-ink-600">Lister Mandate & Direct Verification</span>
+                <span className="text-ink font-semibold">✓ Verified Owner / Mandate</span>
               </div>
               <div className="flex items-center justify-between py-1">
                 <span className="text-ink-600">Locked Price Agreement</span>
@@ -69,7 +69,7 @@ export function VerificationDossier() {
           {/* Stamped Seal */}
           <div className="p-3 bg-white rounded-xl border border-ink/10 flex items-center justify-between shadow-sm">
             <div className="text-[12px]">
-              <span className="font-semibold text-ink block">RentOra Compliance Desk</span>
+              <span className="font-semibold text-ink block">HouseOne Verification Desk</span>
               <span className="text-ink-600 text-[11px]">Direct Mandate Confirmed · Zero Middlemen</span>
             </div>
             <div className="h-8 px-2.5 rounded-full border border-ink flex items-center justify-center text-ink text-[11px] font-bold">

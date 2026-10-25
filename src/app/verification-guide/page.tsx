@@ -19,8 +19,8 @@ export default function VerificationGuidePage() {
     },
     {
       num: '03',
-      title: 'Agent Identity & CAC Verification',
-      desc: 'Every estate agent and property broker must submit national identification (NIN/Voter’s Card) and registered CAC business credentials. Anonymous and untraceable brokers are strictly prohibited.',
+      title: 'Direct Mandate & Landlord Contact Verification',
+      desc: 'Every listing is verified through direct contact with the property owner or authorized caretaker. We confirm the direct mandate, property access, and signed pricing agreement so you never deal with street touts.',
     },
     {
       num: '04',
@@ -35,7 +35,7 @@ export default function VerificationGuidePage() {
         {/* Hero Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <p className="text-[13px] sm:text-[14px] font-semibold text-ink-600">
-            Enugu · Onitsha · Awka · Owerri · Aba · Asaba
+            Enugu · Onitsha · Awka · Owerri · Aba · Asaba · Port Harcourt · Lagos · Abuja · Uyo · <span className="text-amber-600 font-bold">...</span>
           </p>
           <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl tracking-[-0.01em] text-ink">
             How Every Property Earns the{' '}

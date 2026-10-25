@@ -10,7 +10,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "-apple-system", "sans-serif"],
-        serif: ["var(--font-serif)", "Georgia", "serif"],
+        serif: ["var(--font-sans)", "system-ui", "-apple-system", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"],
       },
       colors: {
@@ -28,8 +28,17 @@ export default {
         },
         forest: {
           DEFAULT: "#0F3D2E",
-          700: "#14503C",
+          50: "#F0F7F4",
+          100: "#DCEDE5",
+          200: "#BCE0D1",
           300: "#A8CDBB",
+          400: "#5D9C83",
+          500: "#367B62",
+          600: "#22634C",
+          700: "#14503C",
+          800: "#0F3D2E",
+          900: "#0A291F",
+          950: "#051610",
         },
         // Sovereign Obsidian (Deep High-Contrast Charcoal & Black)
         obsidian: {

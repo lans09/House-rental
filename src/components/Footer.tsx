@@ -5,29 +5,32 @@ import { UliLine } from '@/components/UliLine';
 
 const COLUMNS = [
   {
-    title: 'Find a home',
+    title: 'Verified Rentals',
     links: [
-      { href: '/properties?purpose=rent', label: 'Homes to rent' },
-      { href: '/properties?purpose=sale', label: 'Homes to buy' },
-      { href: '/properties?state=Enugu', label: 'Enugu' },
+      { href: '/properties', label: 'All Verified Rentals' },
+      { href: '/properties?state=Enugu', label: 'Enugu Rentals' },
       { href: '/properties?state=Anambra', label: 'Onitsha & Awka' },
-      { href: '/properties?state=Imo', label: 'Owerri' },
+      { href: '/properties?state=Rivers', label: 'Port Harcourt' },
+      { href: '/properties?state=Lagos', label: 'Lagos Rentals' },
+      { href: '/properties?state=Imo', label: 'Owerri Rentals' },
     ],
   },
   {
-    title: 'Owners & agents',
+    title: 'Owners & Agents',
     links: [
-      { href: '/register?role=landlord', label: 'List your property' },
-      { href: '/register?role=agent', label: 'Register as agent' },
-      { href: '/verification-guide', label: 'How we verify' },
+      { href: '/list-property', label: 'List Your Property' },
+      { href: '/register?role=landlord', label: 'Landlord Registration' },
+      { href: '/verification-guide', label: 'Document Verification' },
+      { href: '/verified-infrastructure', label: 'Verified Infrastructure' },
     ],
   },
   {
-    title: 'RentOra',
+    title: 'HouseOne',
     links: [
-      { href: '/report-fraud', label: 'Report a fake listing' },
-      { href: '/terms', label: 'Terms' },
-      { href: '/privacy', label: 'Privacy' },
+      { href: '/support', label: 'Support & FAQs' },
+      { href: '/profile', label: 'User Profile' },
+      { href: '/verification-guide', label: '₦0 Inspection Pledge' },
+      { href: '/properties', label: 'Catalogue Search' },
     ],
   },
 ];
@@ -41,7 +44,7 @@ export function Footer() {
         <div className="max-w-xs space-y-5">
           <Logo />
           <p className="text-[15px] leading-relaxed text-ink-600">
-            Homes to rent and buy across the South-East, at the price the owner actually agreed.
+            Verified residential rentals across Nigeria, locked at the direct owner price with zero inspection fees.
           </p>
           <div className="space-y-1 text-[15px]">
             <p>
@@ -52,8 +55,8 @@ export function Footer() {
             </p>
             <p>
               <span className="text-ink-600">Email </span>
-              <a href="mailto:hello@rentora.ng" className="font-semibold hover:underline">
-                hello@rentora.ng
+              <a href="mailto:compliance@houseone.ng" className="font-semibold hover:underline">
+                compliance@houseone.ng
               </a>
             </p>
           </div>
@@ -77,8 +80,8 @@ export function Footer() {
 
       <div className="border-t border-ink/10">
         <div className="container-x flex flex-col gap-2 py-6 text-[13px] text-ink-600 sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2026 RentOra Technologies Nigeria Ltd.</p>
-          <p>Enugu · Onitsha · Awka · Owerri · Aba · Asaba</p>
+          <p>© 2026 HouseOne Technologies Nigeria Ltd.</p>
+          <p>Enugu · Onitsha · Awka · Owerri · Aba · Asaba · Port Harcourt · Lagos · Abuja · ...</p>
         </div>
       </div>
     </footer>

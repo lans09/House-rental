@@ -22,6 +22,12 @@ body {
   }
 }
 
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
 /* Architectural Hairline Dividers */
 .hairline-b {
   border-bottom: 1px solid #E7E5E4;

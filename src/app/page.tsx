@@ -18,13 +18,13 @@ const LISTINGS = [
   {
     slug: 'contemporary-5-bed-duplex-gra-onitsha',
     image: '/images/onitsha-gra-mansion.jpg',
-    purpose: 'For sale',
-    price: '₦95,000,000',
-    per: '',
+    purpose: 'For rent',
+    price: '₦6,500,000',
+    per: 'a year',
     title: '5-bedroom detached house',
     area: 'GRA, Onitsha',
-    specs: '5 bed · 5 bath · C of O',
-    verified: 'C of O & mandate confirmed',
+    specs: '5 bed · 5 bath · en-suite BQ',
+    verified: 'Mandate & title confirmed',
   },
   {
     slug: 'executive-3-bed-flat-new-owerri',
@@ -33,8 +33,8 @@ const LISTINGS = [
     price: '₦2,800,000',
     per: 'a year',
     title: '3-bedroom flat',
-    area: 'GRA, Asaba',
-    specs: '3 bed · 3 bath · prepaid meter',
+    area: 'New Owerri, Imo',
+    specs: '3 bed · 3 bath · 2 car park · prepaid meter',
     verified: 'Title & owner terms confirmed',
   },
 ];
@@ -46,6 +46,10 @@ const CITIES = [
   { name: 'Awka', areas: 'Ngozika Estate, Ifite, Iyi-Agu', count: 76, image: '/images/awka-ngozika-duplex.jpg', href: '/properties?state=Anambra&area=Awka' },
   { name: 'Aba', areas: 'Aba GRA, Umungasi', count: 52, image: '/images/aba-gra-residence.jpg', href: '/properties?state=Abia' },
   { name: 'Asaba', areas: 'GRA, Summit Road, Okpanam', count: 46, image: '/images/asaba-gateway-duplex.jpg', href: '/properties?state=Delta&area=Asaba' },
+  { name: 'Port Harcourt', areas: 'Old GRA, Peter Odili, New GRA', count: 64, image: '/images/asaba-gateway-duplex.jpg', href: '/properties?state=Rivers' },
+  { name: 'Lagos', areas: 'Ikoyi, Lekki Phase 1, Victoria Island, Ikeja GRA', count: 142, image: '/images/onitsha-gra-luxury-duplex.jpg', href: '/properties?state=Lagos' },
+  { name: 'Abuja', areas: 'Maitama, Asokoro, Guzape, Wuse 2', count: 115, image: '/images/enugu-flagship-mansion.jpg', href: '/properties?state=Abuja' },
+  { name: 'Uyo', areas: 'Ewet Housing, Shelter Afrique', count: 38, image: '/images/aba-gra-residence.jpg', href: '/properties?state=Akwa Ibom' },
 ];
 
 const STEPS = [
@@ -89,10 +93,20 @@ export default function HomePage() {
             <span>Aba</span>
             <span>·</span>
             <span>Asaba</span>
+            <span>·</span>
+            <span>Port Harcourt</span>
+            <span>·</span>
+            <span>Lagos</span>
+            <span>·</span>
+            <span>Abuja</span>
+            <span>·</span>
+            <span>Uyo</span>
+            <span>·</span>
+            <span className="font-bold text-amber-600">...</span>
           </p>
 
           <h1 className="relative isolate mt-4 font-serif text-[34px] leading-[1.08] tracking-[-0.02em] text-ink xs:text-[40px] sm:text-[60px] sm:leading-[1.02] lg:text-[76px]">
-            Find a home in the East at the{' '}
+            Find a home at the{' '}
             <span className="relative inline-block italic">
               owner’s price.
               <svg
@@ -293,12 +307,12 @@ export default function HomePage() {
         <div className="container-x grid gap-10 sm:gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
           <div className="lg:sticky lg:top-28 lg:self-start">
             <h2 className="font-serif text-3xl leading-tight tracking-[-0.01em] text-ink sm:text-4xl lg:text-5xl">
-              Six cities.
+              All cities,
               <br />
-              <span className="italic">Every listing verified.</span>
+              <span className="italic">verified listing.</span>
             </h2>
             <p className="mt-3 sm:mt-4 max-w-sm text-[15px] sm:text-[17px] leading-relaxed text-ink-600">
-              Every property is backed by direct landlord mandates and verified ownership documents before it appears here.
+              Every property across all featured cities is backed by direct landlord mandates and verified ownership documents before it appears here.
             </p>
           </div>
 
@@ -321,6 +335,24 @@ export default function HomePage() {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link href="/properties" className="group flex items-center gap-3.5 sm:gap-5 py-4 sm:py-5">
+                <div className="h-14 w-14 sm:h-20 sm:w-20 shrink-0 rounded-full bg-amber-100/70 border border-amber-300 flex items-center justify-center font-serif text-2xl sm:text-3xl font-bold text-amber-800 shadow-sm group-hover:bg-amber-200 transition-colors">
+                  ...
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-serif text-xl sm:text-3xl text-ink transition-colors group-hover:text-amber-600">
+                    More cities nationwide
+                  </p>
+                  <p className="mt-0.5 truncate text-[13px] sm:text-[14px] text-ink-600">
+                    Calabar, Warri, Benin City & expanding nationwide
+                  </p>
+                </div>
+                <span className="shrink-0 text-[13px] sm:text-[14px] font-semibold text-ink underline decoration-amber-400 decoration-2 underline-offset-4 group-hover:text-amber-600">
+                  Explore all →
+                </span>
+              </Link>
+            </li>
           </ul>
         </div>
       </section>
